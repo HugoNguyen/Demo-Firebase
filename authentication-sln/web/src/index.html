@@ -52,6 +52,7 @@
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
     var uiConfig_EMAIL_LINK_SIGN_IN_METHOD = {
+      signInSuccessUrl:'index.html',
       signInOptions: [
         {
           provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -59,6 +60,9 @@
           requireDisplayName: false
         }
       ]
+
+      //Terms of service url can be specified an will show up in the widget
+      //toUrl:'<your-to-url>'
     };
 
     //Observe state of Auth object, detect user login or not
