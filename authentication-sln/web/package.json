@@ -1,0 +1,16 @@
+{
+  "name": "demo-firebase-authen",
+  "version": "1.0.0",
+  "description": "Demo of Firebase Authentication",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -w server server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hugo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
+  }
+}
