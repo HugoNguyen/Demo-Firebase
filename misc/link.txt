@@ -1,0 +1,2 @@
+#Firebase Authentication document
+https://firebase.google.com/docs/auth
