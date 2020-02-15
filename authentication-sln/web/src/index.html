@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
-<title>Demo Firebase Authentication</title>
-<body>
+
+<head>
+
+  <title>Demo Firebase Authentication</title>
+
   <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
   <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
@@ -13,24 +17,132 @@
   <!-- Add Firebase products that you want to use -->
   <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
+
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+
+  <style>
+    .list-button button {
+      display: block;
+      margin: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
   
   <script>
     // TODO: Replace the following with your app's Firebase project configuration
     var firebaseConfig = {
-	  apiKey: "AIzaSyCdwwG2ElQ4p29rWx9egvAi22l-Ryg-CHc",
-	  authDomain: "fir-firebase-62c88.firebaseapp.com",
-	  databaseURL: "https://fir-firebase-62c88.firebaseio.com",
-	  projectId: "fir-firebase-62c88",
-	  storageBucket: "fir-firebase-62c88.appspot.com",
-	  messagingSenderId: "792961507489",
-	  appId: "1:792961507489:web:f5a8d72d13dca897a290e0",
-	  measurementId: "G-28L8Q9ZWYB"
-	};
+      apiKey: "AIzaSyCdwwG2ElQ4p29rWx9egvAi22l-Ryg-CHc",
+      authDomain: "fir-firebase-62c88.firebaseapp.com",
+      databaseURL: "https://fir-firebase-62c88.firebaseio.com",
+      projectId: "fir-firebase-62c88",
+      storageBucket: "fir-firebase-62c88.appspot.com",
+      messagingSenderId: "792961507489",
+      appId: "1:792961507489:web:f5a8d72d13dca897a290e0",
+      measurementId: "G-28L8Q9ZWYB"
+    };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
+
+    // Initialize the FirebaseUI Widget using Firebase.
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+    var uiConfig_EMAIL_LINK_SIGN_IN_METHOD = {
+      signInOptions: [
+        {
+          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          //signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
+          requireDisplayName: false
+        }
+      ]
+    };
+
+    //Observe state of Auth object, detect user login or not
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.log("info: User signin",user);
+        $('#btnSignOut').show();
+        $('#btnShowSignInUI').hide();
+        $('#btnSignIn').hide();
+        $('#btnGetUserProfile').show();
+      } else {
+        // No user is signed in.
+        console.log("info: No User signin");
+
+        $('#btnSignOut').hide();
+        $('#btnShowSignInUI').show();
+        $('#btnSignIn').show();
+        $('#btnGetUserProfile').hide();
+      }
+    });
+
+    var showLoginForm = function(){
+      ui.start('#firebaseui-auth-container', uiConfig_EMAIL_LINK_SIGN_IN_METHOD);
+    }
+
+    var signUpUser = function(email, password){
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+      .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log("Error: Cannot Signup user",error);
+      });
+    }
+
+    var signIn = function(email, password){
+      firebase.auth().signInWithEmailAndPassword(email, password)
+      .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log("Error: Cannot SignIn",error);
+      });
+    }
+
+    var signout = function(){
+      firebase.auth().signOut().then(function() {
+        console.log("info: Signout success");
+      }).catch(function(error) {
+        console.log("Error: Cannot signout",error);
+      });
+    }
+
+    var getUserProfile = function(){
+      var user = firebase.auth().currentUser;
+      var name, email, photoUrl, uid, emailVerified;
+      
+      if (user != null) {
+        name = user.displayName;
+        email = user.email;
+        photoUrl = user.photoURL;
+        emailVerified = user.emailVerified;
+        uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
+                        // this value to authenticate with your backend server, if
+                        // you have one. Use User.getToken() instead.
+        console.log("info: User Info",{
+          name: name,
+          email: email,
+          photoUrl: photoUrl,
+          emailVerified: emailVerified,
+          uid: uid
+        })
+      }
+    }
   </script>
   
-  <p>WELCOME</p>
+  <div id="firebaseui-auth-container"/>
+
+  <div class="list-button">
+    <button id='btnShowSignInUI' onclick="showLoginForm()">Show Sign-in UI</button>
+    <button id='btnSignIn' onclick="signIn('nguyenquoctuan61089@gmail.com','Abc@123')">Sign-in</button>
+    <button id='btnSignUp' onclick="signUpUser('nguyenquoctuan61089@gmail.com','Abc@123')">Sign Up</button>
+    <button id='btnSignOut' onclick="signout()">Signout</button>
+    <button id='btnGetUserProfile' onclick="getUserProfile()">User Info</button>
+  </div>
 </body>
 </html>
