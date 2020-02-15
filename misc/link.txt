@@ -1,2 +1,6 @@
 #Firebase Authentication document
 https://firebase.google.com/docs/auth
+
+#Firebase
+acc: nguyenquoctuan61089@gmail.com
+project: demo-firebase
