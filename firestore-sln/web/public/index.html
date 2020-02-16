@@ -36,20 +36,150 @@
     var firebaseConfig = {
       apiKey: "AIzaSyCdwwG2ElQ4p29rWx9egvAi22l-Ryg-CHc",
       authDomain: "fir-firebase-62c88.firebaseapp.com",
-      databaseURL: "https://fir-firebase-62c88.firebaseio.com",
-      projectId: "fir-firebase-62c88",
-      storageBucket: "fir-firebase-62c88.appspot.com",
-      messagingSenderId: "792961507489",
-      appId: "1:792961507489:web:f5a8d72d13dca897a290e0",
-      measurementId: "G-28L8Q9ZWYB"
+      projectId: "fir-firebase-62c88"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
+    //Declare db instance
+    var db = null;
 
+    var getDb = function(){
+      db = firebase.firestore();
+
+      console.log("info: GetDb success");
+    }
+
+    var addData = function(){
+      //Collections user will be create implicitly
+      db.collection('users').add({
+        first: "Ada",
+        last: "Lovelace",
+        born: 1815
+      })
+      .then(function(docRef) {
+          console.log("info: Document written with ID: ", docRef.id);
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
+    }
+
+    var addDataSecond = function(){
+      //Collections user will be create implicitly
+      db.collection('users').add({
+        first: "Alan",
+        middle: "Mathison",
+        last: "Turing",
+        born: 1912
+      })
+      .then(function(docRef) {
+          console.log("info: Document written with ID: ", docRef.id);
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
+    }
+
+    var retrieveAllCollection = function(collectionName){
+      db.collection(collectionName).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              console.log(`${doc.id}`,doc.data());
+          });
+      });
+    }
+
+    var add_To_Collection_Cities = function(){
+      // Add a new document in collection "cities"
+      db.collection("cities").doc("LA").set({
+          name: "Los Angeles",
+          state: "CA",
+          country: "USA"
+      })
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+    }
+
+    var update_doc_LA_with_merge = function(){
+      var cityRef = db.collection('cities').doc('LA');
+
+      var setWithMerge = cityRef.set({
+          capital: true
+      }, { merge: true })
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+    }
+
+    var update_doc_LA_by_updateFn = function(){
+      
+      var cityRef = db.collection('cities').doc('LA');
+
+      cityRef.update({
+          capital: false
+      })
+      .then(function() {
+          console.log("Document successfully updated!");
+      })
+      .catch(function(error) {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+      });
+    }
+
+    var add_demo_dataType = function(){
+      var docData = {
+          stringExample: "Hello world!",
+          booleanExample: true,
+          numberExample: 3.14159265,
+          dateExample: firebase.firestore.Timestamp.fromDate(new Date("December 10, 1815")),
+          arrayExample: [5, true, "hello"],
+          nullExample: null,
+          objectExample: {
+              a: 5,
+              b: {
+                  nested: "foo"
+              }
+          }
+      };
+      db.collection("data").doc("one").set(docData).then(function() {
+          console.log("Document successfully written!");
+      });
+    }
+
+    var remove_field_capital_of_LA = function(){
+      var cityRef = db.collection('cities').doc('LA');
+
+      // Remove the 'capital' field from the document
+      var removeCapital = cityRef.update({
+          capital: firebase.firestore.FieldValue.delete()
+      })
+      .then(()=>{
+        console.log("Document successfully written!");
+      });
+    }
   </script>
   
-  <p>Welcome</p>
+  <div class="list-button">
+    <button onclick="getDb()">Init db</button>
+    <button onclick="addData()">Add data {Ada}</button>
+    <button onclick="addDataSecond()">Add data {Alan}</button>
+    <button onclick="retrieveAllCollection('users')">Retrive Collection Users</button>
+    <button onclick="retrieveAllCollection('cities')">Retrive Collection Cities</button>
+    <button onclick="add_To_Collection_Cities()">Add a new document in collection "cities"</button>
+    <button onclick="update_doc_LA_with_merge()">Update doc 'LA' with Merge</button>
+    <button onclick="update_doc_LA_by_updateFn()">Update doc 'LA' by Update fn</button>
+    <button onclick="add_demo_dataType()">Add Demo DataType</button>
+
+    <button onclick="remove_field_capital_of_LA()">Remove field 'capital' of record LA</button>
+  </div>
 </body>
 </html>
