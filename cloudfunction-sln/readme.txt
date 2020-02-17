@@ -10,3 +10,5 @@ Perform login via browser
 
 3/ Init project
 $firebase init functions
+
+4/ Import the Cloud Functions and Admin SDK modules
